@@ -10,11 +10,12 @@
             
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                <ion-icon slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
+                <ion-icon slot="start" :src= "p.iosIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
+
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -26,9 +27,11 @@
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, home, homeOutline, homeSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
-import { avoirCategories } from './services/themealdb-service';
+import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, homeOutline, homeSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import { avoirCats, avoirCategories } from './services/themealdb-service';
 import {Categorie, Categories} from './interfaces/categorie-model';
+
+
 
 export default defineComponent({
   name: 'App',
@@ -49,51 +52,50 @@ export default defineComponent({
 
 
 
-
-
-
   setup() {
-    const selectedIndex = ref(0);    
+    const selectedIndex = ref(0); 
+    // const promise = avoirCats();
+    // let c:Categories= {categories:[]};
+    // promise.then((response) => {
+    //   c = response;
+    // })
+    // const cats:Categorie[] = c.categories;
+    // console.log(cats.length + 'categories');
+
+
+ 
+
     const { categoriesList, getCategories} = avoirCategories();    
     getCategories();
-    const cats: Categorie[] = categoriesList!.value!.categories!;
-    const accueil:Categorie = {
-        "idCategory": "" ,
-        "strCategory": "Accueil" ,
-        "strCategoryThumb": "",
-        "strCategoryDescription": ""
-    };
-    cats.unshift(accueil);
-    const appPages = [
-      // {
-      //   title: 'Accueil',
-      //   url: '/recette',
-      //   iosIcon: homeOutline,
-      //   mdIcon: homeSharp
-      // },
-    ];
+    const cats: Categorie[] = categoriesList!.value!; 
+   //console.log(cats.length);
+
+    const accueil = {
+        title: "Accueil",
+        url: '/folder/Accueil',
+        iosIcon: 'assets/icons/Accueil.svg',
+        mdIcon: 'assets/icons/Accueil.svg'
+      };
+
+
+    //cats.unshift(accueil);
     
-    for (let i = 0 ; i < cats.length ; i++) {
-      if (i==0){
-        const uneCat =     {
-        title: cats[i].strCategory,
-        url: '/recette',
-        iosIcon: homeOutline,
-        mdIcon: homeSharp
-      }
-      appPages.push(uneCat);
-      }else {
+    const appPages = [];
+    appPages.push(accueil);
+    //const x= cats?.length;
+    for (let i = 0 ; i < cats?.length ; i++) {
       const uneCat =     {
         title: cats[i].strCategory,
         url: '/recette/'+cats[i].strCategory,
-        iosIcon: paperPlaneOutline,
-        mdIcon: paperPlaneSharp
+        iosIcon: 'assets/icons/'+cats[i].strCategory + '.svg',
+        mdIcon: 'assets/icons/'+cats[i].strCategory + '.svg'
       }
       appPages.push(uneCat);
       }      
-    }
-
     
+  console.log('apppage :' + appPages);
+
+
     const path = window.location.pathname.split('recette/')[1];
     if (path !== undefined) {
       selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());

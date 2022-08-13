@@ -15,29 +15,59 @@
           <ion-title size="large">{{ $route.params.id }}</ion-title>
         </ion-toolbar>
       </ion-header>
-    
-      <div id="container">
-        <strong class="capitalize">{{ $route.params.id }} Recettes List View</strong>
-        
-      </div>
+  <ion-list>
+    <ion-item v-for="item in donnees" :key="item.idMeal">
+      <ion-thumbnail slot="start">
+        <ion-img :src="item.strMealThumb"></ion-img>
+      </ion-thumbnail>
+      <ion-label>{{item.strMeal}}</ion-label>
+    </ion-item>
+  </ion-list>
     </ion-content>
   </ion-page>
 </template>
 
+
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-
+import { useRoute } from 'vue-router';
+import { IonButtons, IonContent,IonThumbnail,IonImg,IonList, IonItem,IonLabel, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import {RecetteItem} from '../interfaces/recette-model';
+import { avoirRecList } from '../services/themealdb-service';
 export default defineComponent({
   name: 'FolderPage',
   components: {
     IonButtons,
+    IonLabel,
+    IonList,
+    IonItem,
     IonContent,
     IonHeader,
+    IonThumbnail,
     IonMenuButton,
+    IonImg,
     IonPage,
     IonTitle,
     IonToolbar
+  },
+
+
+
+  setup(){
+    const route = useRoute();
+    const catChoisie = String(route.params.id);
+    const  { recettesList, getRecettesParCat} = avoirRecList();
+    console.log('la catégorie choisie est : '+catChoisie);
+
+  //setTimeout(function(){console.log("loading 2 secondes")}, 2000);
+
+    getRecettesParCat(catChoisie); 
+    
+    const donnees:RecetteItem[] = recettesList!.value!.meals!;
+    console.log(donnees);
+    return {
+      donnees
+    }
   }
 });
 </script>

@@ -3,7 +3,7 @@ export class Urls {
     static chercher = 'search.php?';
     static trouver = 'lookup.php?';
     static filtrer = 'filter.php?';
-    static auPif = 'www.themealdb.com/api/json/v1/1/random.php';
+    static auPif = 'https://www.themealdb.com/api/json/v1/1/random.php';
     static cats = 'categories.php';
     static listCats = 'https://www.themealdb.com/api/json/v1/1/list.php?c=list';
     static listRegions = 'list.php?a=list';

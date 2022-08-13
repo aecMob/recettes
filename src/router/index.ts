@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import AccueilPage from '../views/AccueilPage.vue';
+//import AccueilPage from '../views/AccueilPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '',
-    redirect: '/recette'
+    redirect: '/folder/Accueil'
   },
   {
-    path: '/recette',
+    path: '/folder/Accueil',
     component: () => import ('../views/AccueilPage.vue')
   },
   {

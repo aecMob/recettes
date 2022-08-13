@@ -63,3 +63,7 @@
         strMealThumb: string;
         idMeal: string;
     }
+
+    export interface RecetteItems {
+        meals: RecetteItem[];
+    }
