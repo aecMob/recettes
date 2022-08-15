@@ -16,20 +16,21 @@
         </ion-toolbar>
       </ion-header>
   <ion-list>
-    <ion-item v-for="item in donnees" :key="item.idMeal">
+    <ion-item v-for="item in donnees" :key="item.strMealThumb">
+    <ion-item  @click="() => $router.push(`/detail/${item.idMeal}`)">
       <ion-thumbnail slot="start">
         <ion-img :src="item.strMealThumb"></ion-img>
       </ion-thumbnail>
       <ion-label>{{item.strMeal}}</ion-label>
+    </ion-item>
     </ion-item>
   </ion-list>
     </ion-content>
   </ion-page>
 </template>
 
-
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { IonButtons, IonContent,IonThumbnail,IonImg,IonList, IonItem,IonLabel, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import {RecetteItem} from '../interfaces/recette-model';
@@ -52,9 +53,11 @@ export default defineComponent({
   },
 
 
-
+// test
   setup(){
+    const selectedIndex = ref(0); 
     const route = useRoute();
+     console.log("la route parms est: " + route.params.id );
     const catChoisie = String(route.params.id);
     const  { recettesList, getRecettesParCat} = avoirRecList();
     console.log('la catégorie choisie est : '+catChoisie);
@@ -63,9 +66,10 @@ export default defineComponent({
 
     getRecettesParCat(catChoisie); 
     
-    const donnees:RecetteItem[] = recettesList!.value!.meals!;
+    const donnees:RecetteItem[] = recettesList!.value!;
     console.log(donnees);
     return {
+      selectedIndex,
       donnees
     }
   }

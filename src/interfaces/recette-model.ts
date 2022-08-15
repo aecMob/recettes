@@ -1,4 +1,4 @@
-    export interface Recette {
+   export interface Recette {
         idMeal: string;
         strMeal: string;
         strDrinkAlternate?: any;

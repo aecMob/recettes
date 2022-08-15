@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-//import AccueilPage from '../views/AccueilPage.vue';
+import AccueilPage from '../views/AccueilPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,7 +14,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/recette/:id',
     component: () => import ('../views/FolderPage.vue')
+  },
+  {
+    path: '/detail/:id',
+    component: () => import ('../views/DetailPage.vue')
   }
+
 ]
 
 const router = createRouter({

@@ -1,6 +1,6 @@
 import { Urls } from "@/constantes/urls";
 import { ref } from "vue";
-import { Recette, RecetteItems ,Recettes} from "../interfaces/recette-model";
+import { Recette, RecetteItem,  RecetteItems ,Recettes} from "../interfaces/recette-model";
 import { Categories , Categorie} from "../interfaces/categorie-model";
 
 
@@ -8,8 +8,9 @@ import { Categories , Categorie} from "../interfaces/categorie-model";
 
     const recettes = ref<Recette>();
     const categoriesList = ref<Categorie[]>();
-    const recettesList = ref<RecetteItems>();
+    const recettesList = ref<RecetteItem[]>();
     const recetteRandom = ref<Recette>();
+    const recetteDetail = ref<Recette>();
    
 
 
@@ -23,16 +24,10 @@ import { Categories , Categorie} from "../interfaces/categorie-model";
     async function getRecettesParCat(c:string): Promise<void> {
         const url:string = Urls.urlDeBase.concat(Urls.filtrer,Urls.fltrCat,c);
         const response = await fetch(url);
-        recettesList.value = await response.json();                
+        const rl:RecetteItems= await response.json();   
+        recettesList.value = rl.meals;             
     }
 
-    // async function getRecettesParReg(a:String): Promise<void> {
-
-    // }
-
-    // async function getRecettesParIngred(i:String): Promise<void> {
-
-    // }
 
     async function getRecetteAuPif(): Promise<void> {
         const url:string = Urls.auPif;
@@ -42,25 +37,16 @@ import { Categories , Categorie} from "../interfaces/categorie-model";
         recetteRandom.value = data;    
     }
 
-    // async function getRecetteParId(id:string): Promise<void> {
-    //     const url:string = Urls.urlDeBase.concat(Urls.trouver,'i=',id);
-    //     const response = await fetch(url);
-    //     const recettesCat = await response.json();        
-    // }
-    
-    // async function getCatsList(): Promise<void> {
-    //     const url:string = Urls.listCats;
-    //     const response = await fetch(url);
-    //     const catList: any = await response.json();        
-    // }
 
-    // async function getRegionsList(): Promise<void> {
+    async function getRecetteParId(id:string): Promise<void> {
+      const url:string = Urls.urlDeBase.concat(Urls.trouver, 'i=', id)
+      const response = await fetch(url);
+      const dp:Recettes= await response.json();
+      const data = dp.meals[0];   
+      recetteDetail.value = data;    
+  }
 
-    // }
 
-    // async function getIngredsList(): Promise<void> {
-
-    // }
 
     export function avoirDonnees() {
         return {
@@ -85,6 +71,13 @@ import { Categories , Categorie} from "../interfaces/categorie-model";
         return {
           recettesList,
           getRecettesParCat    
+        }
+      }
+
+      export function avoirDetails() {
+        return {
+          recetteDetail,
+          getRecetteParId    
         }
       }
 

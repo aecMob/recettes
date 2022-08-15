@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
+import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, onIonViewWillEnter } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, homeOutline, homeSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
@@ -33,8 +33,11 @@ import {Categorie, Categories} from './interfaces/categorie-model';
 
 
 
+
+
 export default defineComponent({
   name: 'App',
+
   components: {
     IonApp, 
     IonContent, 
@@ -53,22 +56,16 @@ export default defineComponent({
 
 
   setup() {
+
+
     const selectedIndex = ref(0); 
-    // const promise = avoirCats();
-    // let c:Categories= {categories:[]};
-    // promise.then((response) => {
-    //   c = response;
-    // })
-    // const cats:Categorie[] = c.categories;
-    // console.log(cats.length + 'categories');
 
-
- 
 
     const { categoriesList, getCategories} = avoirCategories();    
     getCategories();
     const cats: Categorie[] = categoriesList!.value!; 
-   //console.log(cats.length);
+
+
 
     const accueil = {
         title: "Accueil",
@@ -77,12 +74,9 @@ export default defineComponent({
         mdIcon: 'assets/icons/Accueil.svg'
       };
 
-
-    //cats.unshift(accueil);
-    
     const appPages = [];
-    appPages.push(accueil);
-    //const x= cats?.length;
+
+    
     for (let i = 0 ; i < cats?.length ; i++) {
       const uneCat =     {
         title: cats[i].strCategory,
@@ -92,16 +86,25 @@ export default defineComponent({
       }
       appPages.push(uneCat);
       }      
-    
+    appPages.unshift(accueil);
+
   console.log('apppage :' + appPages);
 
-
-    const path = window.location.pathname.split('recette/')[1];
-    if (path !== undefined) {
+   let path = window.location.pathname.split('recette/')[1];
+    const pathhome = window.location.pathname.split('folder/')[1];
+    console.log('le path est :' + path + ' le pathhome est :' + pathhome);
+    if (path !== undefined || pathhome !== undefined) {
+      if (pathhome =='Accueil'){
+        selectedIndex.value = 0;
+      } else {
       selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
-    }
+      }
+    }  
     
+    console.log(selectedIndex.value + "  la valeur de l'index") ; 
     const route = useRoute();
+
+    console.log("la route parms est: " + route.params.id );
     
     return { 
       selectedIndex,
@@ -125,6 +128,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 <style scoped>
 ion-menu ion-content {
