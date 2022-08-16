@@ -2,7 +2,12 @@
   <ion-app>
     <ion-split-pane content-id="main-content">
       <ion-menu content-id="main-content" type="overlay">
-        <ion-content>
+      <ion-content v-if="state.loading">
+      <div class="loading-center">
+        <ion-spinner color="primary"></ion-spinner>
+      </div>
+      </ion-content>
+        <ion-content v-else>
 
           <ion-list id="inbox-list">
             <ion-list-header>Nos Recettes</ion-list-header>
@@ -25,8 +30,8 @@
 
 <script lang="ts">
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, onIonViewWillEnter } from '@ionic/vue';
-import { defineComponent, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { defineComponent, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, homeOutline, homeSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
 import { avoirCats, avoirCategories } from './services/themealdb-service';
 import {Categorie, Categories} from './interfaces/categorie-model';
@@ -58,56 +63,67 @@ export default defineComponent({
   setup() {
 
 
-    const selectedIndex = ref(0); 
+      const selectedIndex = ref(0); 
+      const state = reactive({
+      categs: [] as Categorie[],
+      loading: false,
+      });
 
-
-    const { categoriesList, getCategories} = avoirCategories();    
-    getCategories();
-    const cats: Categorie[] = categoriesList!.value!; 
-
-
-
-    const accueil = {
+      const appPages = [{
         title: "Accueil",
         url: '/folder/Accueil',
         iosIcon: 'assets/icons/Accueil.svg',
         mdIcon: 'assets/icons/Accueil.svg'
-      };
+      }];
 
-    const appPages = [];
 
-    
-    for (let i = 0 ; i < cats?.length ; i++) {
-      const uneCat =     {
-        title: cats[i].strCategory,
-        url: '/recette/'+cats[i].strCategory,
-        iosIcon: 'assets/icons/'+cats[i].strCategory + '.svg',
-        mdIcon: 'assets/icons/'+cats[i].strCategory + '.svg'
+     const fetchListeCategories = async () => {
+      state.loading = true;
+      const { categoriesList, getCategories} = avoirCategories();    
+      await getCategories();
+
+      if (categoriesList) {
+        state.categs = categoriesList!.value!;
+        for (let i = 0 ; i < state.categs.length ; i++) {
+          const uneCat =     {
+          title: state.categs[i].strCategory,
+          url: '/recette/'+state.categs[i].strCategory,
+          iosIcon: 'assets/icons/'+state.categs[i].strCategory + '.svg',
+          mdIcon: 'assets/icons/'+state.categs[i].strCategory+ '.svg'
       }
       appPages.push(uneCat);
-      }      
-    appPages.unshift(accueil);
+      }  
+
+      }
+
+      state.loading = false;
+    };
+
+fetchListeCategories();
+
+    //const cats = ["Beef","Breakfast","Chicken","Dessert","Goat","Lamb","Miscellaneous","Pasta","Pork","Seafood","Side","Starter","Vegan","Vegetarian"];
+
 
   console.log('apppage :' + appPages);
 
-   let path = window.location.pathname.split('recette/')[1];
-    const pathhome = window.location.pathname.split('folder/')[1];
-    console.log('le path est :' + path + ' le pathhome est :' + pathhome);
-    if (path !== undefined || pathhome !== undefined) {
-      if (pathhome =='Accueil'){
-        selectedIndex.value = 0;
-      } else {
+   let path = window.location.pathname.split('recette/' || 'folder/')[1];
+   // const pathhome = window.location.pathname.split('folder/')[1];
+    console.log('le path est :' + path );
+    if (path !== undefined ) {
+
       selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
-      }
+      
     }  
     
     console.log(selectedIndex.value + "  la valeur de l'index") ; 
     const route = useRoute();
+    const router =useRouter();
 
     console.log("la route parms est: " + route.params.id );
     
     return { 
       selectedIndex,
+      state,
       appPages, 
       archiveOutline, 
       archiveSharp, 

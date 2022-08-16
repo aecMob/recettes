@@ -93,6 +93,7 @@ export default defineComponent({
   name:'AccueilPage',  
 
   components: {
+    
     IonPage,
     IonHeader,
       IonMenuButton,

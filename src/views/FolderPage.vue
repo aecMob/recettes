@@ -8,15 +8,20 @@
         <ion-title>{{ $route.params.id }}</ion-title>
       </ion-toolbar>
     </ion-header>
+        <ion-content v-if="state.loading">
+      <div class="loading-center">
+        <ion-spinner color="primary"></ion-spinner>
+      </div>
+    </ion-content>
     
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" v-else>
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">{{ $route.params.id }}</ion-title>
         </ion-toolbar>
       </ion-header>
   <ion-list>
-    <ion-item v-for="item in donnees" :key="item.strMealThumb">
+    <ion-item v-for="item in state.recettes" :key="item.strMealThumb">
     <ion-item  @click="() => $router.push(`/detail/${item.idMeal}`)">
       <ion-thumbnail slot="start">
         <ion-img :src="item.strMealThumb"></ion-img>
@@ -30,9 +35,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { IonButtons, IonContent,IonThumbnail,IonImg,IonList, IonItem,IonLabel, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonButtons, IonContent,IonThumbnail,IonImg,IonSpinner,IonList, IonItem,IonLabel, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import {RecetteItem} from '../interfaces/recette-model';
 import { avoirRecList } from '../services/themealdb-service';
 export default defineComponent({
@@ -42,6 +47,7 @@ export default defineComponent({
     IonLabel,
     IonList,
     IonItem,
+    IonSpinner,
     IonContent,
     IonHeader,
     IonThumbnail,
@@ -55,22 +61,50 @@ export default defineComponent({
 
 // test
   setup(){
-    const selectedIndex = ref(0); 
+    //const selectedIndex = ref(0); 
     const route = useRoute();
-     console.log("la route parms est: " + route.params.id );
-    const catChoisie = String(route.params.id);
-    const  { recettesList, getRecettesParCat} = avoirRecList();
-    console.log('la catégorie choisie est : '+catChoisie);
+     const catChoisie = String(route.params.id);
+    const state = reactive({
+      recettes: [] as RecetteItem[],
+      loading: false,
+    });
+    
+    const fetchListeRecettes = async (cat: string) => {
+      state.loading = true;
+      const  { recettesList, getRecettesParCat} = avoirRecList();
+      await getRecettesParCat(cat); 
+
+      console.log( "la reponse du fetch est:" + recettesList.value);
+
+      if (recettesList) {
+        state.recettes = recettesList!.value!;
+      }
+
+      state.loading = false;
+    };
+
+fetchListeRecettes(catChoisie);
+
+
+
+
+
+
+
+    //  console.log("la route parms est: " + route.params.id );
+
+    // const  { recettesList, getRecettesParCat} = avoirRecList();
+    // console.log('la catégorie choisie est : '+catChoisie);
 
   //setTimeout(function(){console.log("loading 2 secondes")}, 2000);
 
-    getRecettesParCat(catChoisie); 
+    // getRecettesParCat(catChoisie); 
     
-    const donnees:RecetteItem[] = recettesList!.value!;
-    console.log(donnees);
+    // donnees = recettesList!.value!;
+    // console.log(donnees);
     return {
-      selectedIndex,
-      donnees
+      //selectedIndex,
+      state
     }
   }
 });
