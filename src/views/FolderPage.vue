@@ -8,36 +8,104 @@
         <ion-title>{{ $route.params.id }}</ion-title>
       </ion-toolbar>
     </ion-header>
+        <ion-content v-if="state.loading">
+      <div class="loading-center">
+        <ion-spinner color="primary"></ion-spinner>
+      </div>
+    </ion-content>
     
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" v-else>
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">{{ $route.params.id }}</ion-title>
         </ion-toolbar>
       </ion-header>
-    
-      <div id="container">
-        <strong class="capitalize">{{ $route.params.id }}</strong>
-        <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
+  <ion-list>
+    <ion-item v-for="item in state.recettes" :key="item.strMealThumb">
+    <ion-item  @click="() => $router.push(`/detail/${item.idMeal}`)">
+      <ion-thumbnail slot="start">
+        <ion-img :src="item.strMealThumb"></ion-img>
+      </ion-thumbnail>
+      <ion-label>{{item.strMeal}}</ion-label>
+    </ion-item>
+    </ion-item>
+  </ion-list>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-
+import { defineComponent, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { IonButtons, IonContent,IonThumbnail,IonImg,IonSpinner,IonList, IonItem,IonLabel, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import {RecetteItem} from '../interfaces/recette-model';
+import { avoirRecList } from '../services/themealdb-service';
 export default defineComponent({
   name: 'FolderPage',
   components: {
     IonButtons,
+    IonLabel,
+    IonList,
+    IonItem,
+    IonSpinner,
     IonContent,
     IonHeader,
+    IonThumbnail,
     IonMenuButton,
+    IonImg,
     IonPage,
     IonTitle,
     IonToolbar
+  },
+
+
+// test
+  setup(){
+    //const selectedIndex = ref(0); 
+    const route = useRoute();
+     const catChoisie = String(route.params.id);
+    const state = reactive({
+      recettes: [] as RecetteItem[],
+      loading: false,
+    });
+    
+    const fetchListeRecettes = async (cat: string) => {
+      state.loading = true;
+      const  { recettesList, getRecettesParCat} = avoirRecList();
+      await getRecettesParCat(cat); 
+
+      console.log( "la reponse du fetch est:" + recettesList.value);
+
+      if (recettesList) {
+        state.recettes = recettesList!.value!;
+      }
+
+      state.loading = false;
+    };
+
+fetchListeRecettes(catChoisie);
+
+
+
+
+
+
+
+    //  console.log("la route parms est: " + route.params.id );
+
+    // const  { recettesList, getRecettesParCat} = avoirRecList();
+    // console.log('la catégorie choisie est : '+catChoisie);
+
+  //setTimeout(function(){console.log("loading 2 secondes")}, 2000);
+
+    // getRecettesParCat(catChoisie); 
+    
+    // donnees = recettesList!.value!;
+    // console.log(donnees);
+    return {
+      //selectedIndex,
+      state
+    }
   }
 });
 </script>

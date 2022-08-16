@@ -1,4 +1,4 @@
-    export interface Recette {
+   export interface Recette {
         idMeal: string;
         strMeal: string;
         strDrinkAlternate?: any;
@@ -62,4 +62,8 @@
         strMeal: string;
         strMealThumb: string;
         idMeal: string;
+    }
+
+    export interface RecetteItems {
+        meals: RecetteItem[];
     }
